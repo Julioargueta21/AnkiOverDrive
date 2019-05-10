@@ -106,12 +106,7 @@ public class AnkiCustom {
         car.addMessageListener(PingResponseMessage.class, prh);
         AnkiCustom.pingSentAt = System.currentTimeMillis();
         car.sendMessage(new PingRequestMessage());
-
-        System.out.println("   Flashing lights...");
-        LightConfig lc = new LightConfig(LightsPatternMessage.LightChannel.TAIL, LightsPatternMessage.LightEffect.STROBE, 0, 0, 0);
-        LightsPatternMessage lpm = new LightsPatternMessage();
-        lpm.add(lc);
-        car.sendMessage(lpm);
+        
     }
 
     /**
