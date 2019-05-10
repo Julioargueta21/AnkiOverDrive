@@ -91,6 +91,7 @@ public class AnkiConnectionTest {
                 LocalizationIntersectionUpdateMessage ium = new LocalizationIntersectionUpdateMessage();
                 if(ium.getRoadPieceId() == 10 | ium.getRoadPieceId() == 11) {
                 v.sendMessage(new SetSpeedMessage(0 , 0));
+                System.out.println("Intersection Detected");
                 }
                 Thread.sleep(3000);
                 v.disconnect();
