@@ -21,7 +21,7 @@ public class AnkiConnectionTest {
 
     static long pingReceivedAt;
     static long pingSentAt;
-    
+    static Vehicle car;
     public static void main(String[] args) throws IOException, InterruptedException {
 
         System.out.println("Launching connector...");
@@ -34,7 +34,7 @@ public class AnkiConnectionTest {
             
         } else {
             System.out.println(" FOUND " + vehicles.size() + " CARS! They are:");
-            
+
             Iterator<Vehicle> iter = vehicles.iterator();
             while (iter.hasNext()) {
                 Vehicle v = iter.next();
@@ -50,41 +50,13 @@ public class AnkiConnectionTest {
                 System.out.println("      charging? " + v.getAdvertisement().isCharging());*/
             }
             
-            System.out.println("\nNow connecting to and doing stuff to your cars.\n\n");
-
             iter = vehicles.iterator();
             while (iter.hasNext()) {
-                Vehicle v = iter.next();
-                System.out.println("\nConnecting to " + v + " @ " + v.getAddress());
-                v.connect();
-                System.out.print("   Connected. Setting SDK mode...");   //always set the SDK mode FIRST!                
-                v.sendMessage(new SdkModeMessage());
-                System.out.println("   SDK Mode set.");
-                
-                System.out.println("   Sending asynchronous Battery Level Request. The Response will come in eventually.");
-                //we have to set up a response handler first, in order to handle async responses
-                BatteryLevelResponseHandler blrh = new BatteryLevelResponseHandler();
-                //now we tell the car, who is listening to the replies
-                v.addMessageListener(BatteryLevelResponseMessage.class, blrh);
-                //now we can actually send it.
-                v.sendMessage(new BatteryLevelRequestMessage());
-                
-
-                System.out.println("   Sending Ping Request...");
-                //again, some async set-up required...
-                PingResponseHandler prh = new PingResponseHandler();
-                v.addMessageListener(PingResponseMessage.class, prh);
-                AnkiConnectionTest.pingSentAt = System.currentTimeMillis();
-                v.sendMessage(new PingRequestMessage());
-                
-               /* System.out.println("   Flashing lights...");
-                LightConfig lc = new LightConfig(LightsPatternMessage.LightChannel.TAIL, LightsPatternMessage.LightEffect.STROBE, 0, 0, 0);
-                LightsPatternMessage lpm = new LightsPatternMessage();
-                lpm.add(lc);
-                v.sendMessage(lpm);*/
+                 car = iter.next();
+                 init();
 
                 System.out.println("   Setting Speed...");
-                v.sendMessage(new SetSpeedMessage(250, 100));
+                car.sendMessage(new SetSpeedMessage(250, 100));
 
                 // System.out.print("Sleeping for 10secs... ");
                 //Thread.sleep(10000);
@@ -92,19 +64,19 @@ public class AnkiConnectionTest {
                 LocalizationPositionUpdateMessage ipm = new LocalizationPositionUpdateMessage();
                 LocalizationIntersectionUpdateMessage ium = new LocalizationIntersectionUpdateMessage();
 
-                v.sendMessage(ipm);
-                System.out.println( "Intersection Code: " + ipm.getRoadPieceId());
 
-                // System.out.println("Intersection Code: " + ium.getIntersectionCode());
+                System.out.println(ipm.getRoadPieceId());
+
+
                 if(ium.getRoadPieceId() == 10 | ium.getRoadPieceId() == 11) {
-                v.sendMessage(new SetSpeedMessage(0 , 0));
+                car.sendMessage(new SetSpeedMessage(0 , 0));
                 System.out.println("Intersection Detected");
                 }
                 else{
                     System.out.println("Entering Thread Sleep ELSE BLOCK");
                     Thread.sleep(10000);
-                    v.disconnect();
-                    System.out.println("disconnected from " + v + "\n");
+                    car.disconnect();
+                    System.out.println("disconnected from " + car + "\n");
                 }
 
             }
@@ -112,6 +84,43 @@ public class AnkiConnectionTest {
         anki.close();
         System.exit(0);
     }
+
+
+
+   public static void init(){
+
+
+       System.out.println("\nNow connecting to and doing stuff to your cars.\n\n");
+
+       System.out.println("\nConnecting to " + car + " @ " + car.getAddress());
+       car.connect();
+       System.out.print("   Connected. Setting SDK mode...");   //always set the SDK mode FIRST!
+       car.sendMessage(new SdkModeMessage());
+       System.out.println("   SDK Mode set.");
+
+       System.out.println("   Sending asynchronous Battery Level Request. The Response will come in eventually.");
+       //we have to set up a response handler first, in order to handle async responses
+       BatteryLevelResponseHandler blrh = new BatteryLevelResponseHandler();
+       //now we tell the car, who is listening to the replies
+       car.addMessageListener(BatteryLevelResponseMessage.class, blrh);
+       //now we can actually send it.
+       car.sendMessage(new BatteryLevelRequestMessage());
+
+
+       System.out.println("   Sending Ping Request...");
+       //again, some async set-up required...
+       PingResponseHandler prh = new PingResponseHandler();
+       car.addMessageListener(PingResponseMessage.class, prh);
+       AnkiConnectionTest.pingSentAt = System.currentTimeMillis();
+       car.sendMessage(new PingRequestMessage());
+
+       System.out.println("   Flashing lights...");
+       LightConfig lc = new LightConfig(LightsPatternMessage.LightChannel.TAIL, LightsPatternMessage.LightEffect.STROBE, 0, 0, 0);
+       LightsPatternMessage lpm = new LightsPatternMessage();
+       lpm.add(lc);
+       car.sendMessage(lpm);
+   }
+
 
     /**
      * Handles the response from the vehicle from the BatteryLevelRequestMessage.
