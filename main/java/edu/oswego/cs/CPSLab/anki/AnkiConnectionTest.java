@@ -92,6 +92,8 @@ public class AnkiConnectionTest {
                 Thread.sleep(10000);
                 v.disconnect();
                 System.out.println("disconnected from " + v + "\n");
+
+                // Test Change
             }
         }
         anki.close();

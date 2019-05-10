@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Google Guva Libs">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../Google Guva Libs" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../../../Google Guva Libs" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../../../Google Guva Libs" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../../../Google Guva Libs" recursive="false" type="SOURCES" />
+  </library>
+</component>
