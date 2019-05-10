@@ -2,6 +2,7 @@ package edu.oswego.cs.CPSLab.anki;
 
 import de.adesso.anki.AnkiConnector;
 import de.adesso.anki.MessageListener;
+import de.adesso.anki.RoadmapScanner;
 import de.adesso.anki.Vehicle;
 import de.adesso.anki.messages.*;
 import de.adesso.anki.messages.LightsPatternMessage.LightConfig;
@@ -64,6 +65,11 @@ public class AnkiConnectionTest {
                 LocalizationPositionUpdateMessage ipm = new LocalizationPositionUpdateMessage();
                 LocalizationIntersectionUpdateMessage ium = new LocalizationIntersectionUpdateMessage();
 
+                RoadmapScanner rms = new RoadmapScanner(iter.next());
+                rms.startScanning();
+
+                System.out.println(rms.getRoadmap().toString());
+
 
                 System.out.println(ipm.getRoadPieceId());
 
@@ -88,8 +94,6 @@ public class AnkiConnectionTest {
 
 
    public static void init(){
-
-
        System.out.println("\nNow connecting to and doing stuff to your cars.\n\n");
 
        System.out.println("\nConnecting to " + car + " @ " + car.getAddress());
