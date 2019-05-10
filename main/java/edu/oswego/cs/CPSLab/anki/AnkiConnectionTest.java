@@ -38,14 +38,16 @@ public class AnkiConnectionTest {
             Iterator<Vehicle> iter = vehicles.iterator();
             while (iter.hasNext()) {
                 Vehicle v = iter.next();
-                System.out.println("   " + v);
+                // This outputs it Advert Info
+
+               /* System.out.println("   " + v);
                 System.out.println("      ID: " + v.getAdvertisement().getIdentifier());
                 System.out.println("      Model: " + v.getAdvertisement().getModel());
                 System.out.println("      Model ID: " + v.getAdvertisement().getModelId());
                 System.out.println("      Product ID: " + v.getAdvertisement().getProductId());
                 System.out.println("      Address: " + v.getAddress());
                 System.out.println("      Color: " + v.getColor());
-                System.out.println("      charging? " + v.getAdvertisement().isCharging());
+                System.out.println("      charging? " + v.getAdvertisement().isCharging());*/
             }
             
             System.out.println("\nNow connecting to and doing stuff to your cars.\n\n");
@@ -67,6 +69,7 @@ public class AnkiConnectionTest {
                 //now we can actually send it.
                 v.sendMessage(new BatteryLevelRequestMessage());
                 
+
                 System.out.println("   Sending Ping Request...");
                 //again, some async set-up required...
                 PingResponseHandler prh = new PingResponseHandler();
@@ -74,19 +77,25 @@ public class AnkiConnectionTest {
                 AnkiConnectionTest.pingSentAt = System.currentTimeMillis();
                 v.sendMessage(new PingRequestMessage());
                 
-                System.out.println("   Flashing lights...");
+               /* System.out.println("   Flashing lights...");
                 LightConfig lc = new LightConfig(LightsPatternMessage.LightChannel.TAIL, LightsPatternMessage.LightEffect.STROBE, 0, 0, 0);
                 LightsPatternMessage lpm = new LightsPatternMessage();
                 lpm.add(lc);
-                v.sendMessage(lpm);
+                v.sendMessage(lpm);*/
+
                 System.out.println("   Setting Speed...");
                 v.sendMessage(new SetSpeedMessage(250, 100));
 
-
                 // System.out.print("Sleeping for 10secs... ");
                 //Thread.sleep(10000);
+
+                LocalizationPositionUpdateMessage ipm = new LocalizationPositionUpdateMessage();
                 LocalizationIntersectionUpdateMessage ium = new LocalizationIntersectionUpdateMessage();
-                System.out.println("Intersection Code: " + ium.getIntersectionCode());
+
+                v.sendMessage(ipm);
+                System.out.println( "Intersection Code: " + ipm.getRoadPieceId());
+
+                // System.out.println("Intersection Code: " + ium.getIntersectionCode());
                 if(ium.getRoadPieceId() == 10 | ium.getRoadPieceId() == 11) {
                 v.sendMessage(new SetSpeedMessage(0 , 0));
                 System.out.println("Intersection Detected");
