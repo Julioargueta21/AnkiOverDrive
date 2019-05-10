@@ -53,15 +53,15 @@ public class AnkiCustom {
                 car.addMessageListener(LocalizationPositionUpdateMessage.class, positionLog);
 
 
-                Thread.sleep(TimeUnit.MILLISECONDS.toSeconds(30)); // Time for the whole car to drive
+                Thread.sleep(TimeUnit.MILLISECONDS.toDays(30)); // Time for the whole car to drive
                 if (positionLog.asyncGetRoadPieceID() == 10) {
                     car.sendMessage(new SetSpeedMessage(0, 0));
                     Thread.sleep(TimeUnit.MILLISECONDS.toSeconds(3)); // Stop at intersection
                 } else {
+                    for(int i = 0;  i < 50; i++){
                     System.out.println("ELSE BLOCK HIT: FAILURE");
-                    System.out.println("disconnected from " + car + "\n");
-                    car.disconnect();
-                }
+                   // System.out.println("disconnected from " + car + "\n");
+                }}
             }
         }
         anki.close();
