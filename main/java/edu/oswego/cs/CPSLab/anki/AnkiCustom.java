@@ -72,7 +72,10 @@ public class AnkiCustom {
     private static class PositionResponseHandler implements MessageListener<LocalizationPositionUpdateMessage>{
         @Override
         public void messageReceived(LocalizationPositionUpdateMessage message) {
+            System.out.println("--------------------------------------------------");
             System.out.println("Position is: "  + message);
+            System.out.println("--------------------------------------------------");
+            System.out.println("SINGLE ROAD PIECE ID: " + message.getRoadPieceId());
         }
     }
 }
