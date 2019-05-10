@@ -80,7 +80,7 @@ public class AnkiConnectionTest {
                 lpm.add(lc);
                 v.sendMessage(lpm);
                 System.out.println("   Setting Speed...");
-                v.sendMessage(new SetSpeedMessage(500, 100));
+                v.sendMessage(new SetSpeedMessage(250, 100));
 
                 //Thread.sleep(1000);
                 //gs.sendMessage(new TurnMessage());
@@ -93,9 +93,14 @@ public class AnkiConnectionTest {
                 v.sendMessage(new SetSpeedMessage(0 , 0));
                 System.out.println("Intersection Detected");
                 }
-                Thread.sleep(3000);
-                v.disconnect();
-                System.out.println("disconnected from " + v + "\n");
+                else{
+                    System.out.println("Entering Thread Sleep ELSE BLOCK");
+                    Thread.sleep(10000);
+                    v.disconnect();
+                    System.out.println("disconnected from " + v + "\n");
+                }
+
+
 
 
             }
