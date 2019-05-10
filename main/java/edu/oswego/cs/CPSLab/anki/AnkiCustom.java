@@ -8,6 +8,7 @@ import de.adesso.anki.messages.*;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class AnkiCustom {
 
@@ -48,34 +49,42 @@ public class AnkiCustom {
 
                 // NEW SHIT
                 System.out.println("   Getting Position Information...");
-                PositionResponseHandler posLis = new PositionResponseHandler();
-                car.addMessageListener(LocalizationPositionUpdateMessage.class, posLis);
+                PositionResponseHandler positionLog = new PositionResponseHandler();
+                car.addMessageListener(LocalizationPositionUpdateMessage.class, positionLog);
 
 
-                System.out.println("Entering Thread Sleep ELSE BLOCK");
-                Thread.sleep(10000);
-                car.disconnect();
-                System.out.println("disconnected from " + car + "\n");
+                Thread.sleep(TimeUnit.MILLISECONDS.toSeconds(30)); // Time for the whole car to drive
+                if (positionLog.asyncGetRoadPieceID() == 10) {
+                    car.sendMessage(new SetSpeedMessage(0, 0));
+                    Thread.sleep(TimeUnit.MILLISECONDS.toSeconds(3)); // Stop at intersection
+                } else {
+                    System.out.println("ELSE BLOCK HIT: FAILURE");
+                    System.out.println("disconnected from " + car + "\n");
+                    car.disconnect();
+                }
             }
         }
         anki.close();
         System.exit(0);
     }
-
     // Response Handlers classes in order to get message updates asynchronously
 
     /**
      * Handles the response from the vehicle from the PingRequestMessage.
      * We need handler classes because responses from the vehicles are asynchronous.
      */
-
-    private static class PositionResponseHandler implements MessageListener<LocalizationPositionUpdateMessage>{
+    private static class PositionResponseHandler implements MessageListener<LocalizationPositionUpdateMessage> {
+        private LocalizationPositionUpdateMessage LPUM;
         @Override
         public void messageReceived(LocalizationPositionUpdateMessage message) {
             System.out.println("--------------------------------------------------");
-            System.out.println("Position is: "  + message);
+            System.out.println("Position is: " + message);
             System.out.println("--------------------------------------------------");
             System.out.println("SINGLE ROAD PIECE ID: " + message.getRoadPieceId());
+        }
+
+        public int asyncGetRoadPieceID() {
+           return  LPUM.getRoadPieceId();
         }
     }
 }
