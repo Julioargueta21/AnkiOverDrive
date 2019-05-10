@@ -2,10 +2,8 @@ package edu.oswego.cs.CPSLab.anki;
 
 import de.adesso.anki.AnkiConnector;
 import de.adesso.anki.MessageListener;
-import de.adesso.anki.RoadmapScanner;
 import de.adesso.anki.Vehicle;
 import de.adesso.anki.messages.*;
-import de.adesso.anki.messages.LightsPatternMessage.LightConfig;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -55,7 +53,20 @@ public class AnkiCustom {
             iter = vehicles.iterator();
             while (iter.hasNext()) {
                 car = iter.next();
-                init();
+                System.out.println("\nNow connecting to and doing stuff to your cars.\n\n");
+
+                System.out.println("\nConnecting to " + car + " @ " + car.getAddress());
+                car.connect();
+                System.out.println("   Connected. Setting SDK mode...");   //always set the SDK mode FIRST!
+                car.sendMessage(new SdkModeMessage());
+                System.out.println("   SDK Mode set.");
+
+                System.out.println("   Sending Ping Request...");
+                //again, some async set-up required...
+                PingResponseHandler prh = new PingResponseHandler();
+                car.addMessageListener(PingResponseMessage.class, prh);
+                AnkiCustom.pingSentAt = System.currentTimeMillis();
+                car.sendMessage(new PingRequestMessage());
 
                 System.out.println("   Setting Speed...");
                 car.sendMessage(new SetSpeedMessage(250, 100));
@@ -65,17 +76,10 @@ public class AnkiCustom {
 
 
                 // NEW SHIT
+                System.out.println("   Getting Position Information...");
+                PositionResponseHandler posLis = new PositionResponseHandler();
+                car.addMessageListener(LocalizationPositionUpdateMessage.class, posLis);
 
-                LocalizationPositionUpdateMessage ipm = new LocalizationPositionUpdateMessage();
-                LocalizationIntersectionUpdateMessage ium = new LocalizationIntersectionUpdateMessage();
-
-                RoadmapScanner rms = new RoadmapScanner(iter.next());
-                rms.startScanning();
-
-                System.out.println("ROAD MAP TOSTRING: " + rms.getRoadmap().toString());
-
-
-                System.out.println("ROAD PIECE ID: " + ipm.getRoadPieceId());
 
                 System.out.println("Entering Thread Sleep ELSE BLOCK");
                 Thread.sleep(10000);
@@ -90,24 +94,6 @@ public class AnkiCustom {
     }
 
 
-    public static void init() {
-        System.out.println("\nNow connecting to and doing stuff to your cars.\n\n");
-
-        System.out.println("\nConnecting to " + car + " @ " + car.getAddress());
-        car.connect();
-        System.out.print("   Connected. Setting SDK mode...");   //always set the SDK mode FIRST!
-        car.sendMessage(new SdkModeMessage());
-        System.out.println("   SDK Mode set.");
-
-
-        System.out.println("   Sending Ping Request...");
-        //again, some async set-up required...
-        PingResponseHandler prh = new PingResponseHandler();
-        car.addMessageListener(PingResponseMessage.class, prh);
-        AnkiCustom.pingSentAt = System.currentTimeMillis();
-        car.sendMessage(new PingRequestMessage());
-        
-    }
 
     /**
      * Handles the response from the vehicle from the PingRequestMessage.
@@ -118,6 +104,13 @@ public class AnkiCustom {
         public void messageReceived(PingResponseMessage m) {
             AnkiCustom.pingReceivedAt = System.currentTimeMillis();
             System.out.println("   Ping response received. Roundtrip: " + (AnkiCustom.pingReceivedAt - AnkiCustom.pingSentAt) + " msec.");
+        }
+    }
+
+    private static class PositionResponseHandler implements MessageListener<LocalizationPositionUpdateMessage>{
+        @Override
+        public void messageReceived(LocalizationPositionUpdateMessage message) {
+            System.out.println("Position is: "  + message);
         }
     }
 }
