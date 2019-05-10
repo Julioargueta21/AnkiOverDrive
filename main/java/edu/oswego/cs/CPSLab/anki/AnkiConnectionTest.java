@@ -3,14 +3,9 @@ package edu.oswego.cs.CPSLab.anki;
 import de.adesso.anki.AnkiConnector;
 import de.adesso.anki.MessageListener;
 import de.adesso.anki.Vehicle;
-import de.adesso.anki.messages.BatteryLevelRequestMessage;
-import de.adesso.anki.messages.BatteryLevelResponseMessage;
-import de.adesso.anki.messages.LightsPatternMessage;
+import de.adesso.anki.messages.*;
 import de.adesso.anki.messages.LightsPatternMessage.LightConfig;
-import de.adesso.anki.messages.PingRequestMessage;
-import de.adesso.anki.messages.PingResponseMessage;
-import de.adesso.anki.messages.SdkModeMessage;
-import de.adesso.anki.messages.SetSpeedMessage;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -86,14 +81,22 @@ public class AnkiConnectionTest {
                 v.sendMessage(lpm);
                 System.out.println("   Setting Speed...");
                 v.sendMessage(new SetSpeedMessage(500, 100));
+
                 //Thread.sleep(1000);
                 //gs.sendMessage(new TurnMessage());
-                System.out.print("Sleeping for 10secs... ");
-                Thread.sleep(10000);
+
+                // System.out.print("Sleeping for 10secs... ");
+                //Thread.sleep(10000);
+
+                LocalizationIntersectionUpdateMessage ium = new LocalizationIntersectionUpdateMessage();
+                if(ium.getRoadPieceId() == 10 | ium.getRoadPieceId() == 11) {
+                v.sendMessage(new SetSpeedMessage(0 , 0));
+                }
+                Thread.sleep(3000);
                 v.disconnect();
                 System.out.println("disconnected from " + v + "\n");
 
-                // Test Change
+
             }
         }
         anki.close();
