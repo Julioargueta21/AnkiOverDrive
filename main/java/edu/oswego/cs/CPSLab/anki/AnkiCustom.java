@@ -12,10 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 public class AnkiCustom {
 
-    static long pingReceivedAt;
-    static long pingSentAt;
-
-
     public static void main(String[] args) throws IOException, InterruptedException {
 
         System.out.println("Launching connector...");
@@ -53,15 +49,12 @@ public class AnkiCustom {
                 car.addMessageListener(LocalizationPositionUpdateMessage.class, positionLog);
 
 
-                Thread.sleep(TimeUnit.MILLISECONDS.toDays(30)); // Time for the whole car to drive
-                if (positionLog.asyncGetRoadPieceID() == 10) {
-                    car.sendMessage(new SetSpeedMessage(0, 0));
+                Thread.sleep(TimeUnit.MILLISECONDS.toDays(30)); // Time for the whole car to drive;
+                while(positionLog.asyncTrackIDGet() == 10) {
                     Thread.sleep(TimeUnit.MILLISECONDS.toSeconds(3)); // Stop at intersection
-                } else {
-                    for(int i = 0;  i < 50; i++){
-                    System.out.println("ELSE BLOCK HIT: FAILURE");
-                   // System.out.println("disconnected from " + car + "\n");
-                }}
+                    car.sendMessage(new SetSpeedMessage(0, 0));
+                }
+
             }
         }
         anki.close();
@@ -77,14 +70,15 @@ public class AnkiCustom {
         private LocalizationPositionUpdateMessage LPUM;
         @Override
         public void messageReceived(LocalizationPositionUpdateMessage message) {
+            message = this.LPUM;
             System.out.println("--------------------------------------------------");
             System.out.println("Position is: " + message);
             System.out.println("--------------------------------------------------");
             System.out.println("SINGLE ROAD PIECE ID: " + message.getRoadPieceId());
         }
 
-        public int asyncGetRoadPieceID() {
-           return  LPUM.getRoadPieceId();
+        public int asyncTrackIDGet(){
+            return this.LPUM.getRoadPieceId();
         }
     }
 }
