@@ -62,7 +62,7 @@ public class AnkiConnectionTest {
                 System.out.println("   Sending asynchronous Battery Level Request. The Response will come in eventually.");
                 //we have to set up a response handler first, in order to handle async responses
                 BatteryLevelResponseHandler blrh = new BatteryLevelResponseHandler();
-                //now we tell the car, who is listenening to the replies
+                //now we tell the car, who is listening to the replies
                 v.addMessageListener(BatteryLevelResponseMessage.class, blrh);
                 //now we can actually send it.
                 v.sendMessage(new BatteryLevelRequestMessage());
@@ -82,13 +82,11 @@ public class AnkiConnectionTest {
                 System.out.println("   Setting Speed...");
                 v.sendMessage(new SetSpeedMessage(250, 100));
 
-                //Thread.sleep(1000);
-                //gs.sendMessage(new TurnMessage());
 
                 // System.out.print("Sleeping for 10secs... ");
                 //Thread.sleep(10000);
-
                 LocalizationIntersectionUpdateMessage ium = new LocalizationIntersectionUpdateMessage();
+                System.out.println("Intersection Code: " + ium.getIntersectionCode());
                 if(ium.getRoadPieceId() == 10 | ium.getRoadPieceId() == 11) {
                 v.sendMessage(new SetSpeedMessage(0 , 0));
                 System.out.println("Intersection Detected");
@@ -99,9 +97,6 @@ public class AnkiConnectionTest {
                     v.disconnect();
                     System.out.println("disconnected from " + v + "\n");
                 }
-
-
-
 
             }
         }
